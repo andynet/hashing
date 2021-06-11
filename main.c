@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "src/hashing.h"
 
-uint hash(const void *item) {
+uint hash_fn(const void *item) {
     uint *n = (uint *)item;
     return *n;
 }
@@ -33,7 +33,7 @@ void set_print(map_t *map) {
     printf("}\n");
 }
 
-int cmp(const void *item1,const void *item2) {
+int cmp_fn(const void *item1,const void *item2) {
     const int *i1 = item1;
     const int *i2 = item2;
     if (*i1 < *i2) return -1;
@@ -42,34 +42,17 @@ int cmp(const void *item1,const void *item2) {
 }
 
 int main() {
-    map_t *map = map_create(11, hash, cmp);
-    uint *a;
 
-    a = malloc(sizeof *a);
-    (*a) = 10;
-    map_insert(map, a);
-    a = malloc(sizeof *a);
-    (*a) = 5;
-    map_insert(map, a);
-    a = malloc(sizeof *a);
-    (*a) = 13;
-    map_insert(map, a);
-
-    set_print(map);
-
-    map_resize(map, 20);
-    set_print(map);
-
-    a = malloc(sizeof *a);
-
-    (*a) = 5;
-    a = map_search(map, a);
-    print_item(a);
-    (*a) = 6;
-    a = map_search(map, a);
-    print_item(a);
-
-    map_destroy(map);
+    uint items[] = {49};
+    map_t *map = map_create(11, &hash_fn, &cmp_fn);
+    map_insert(map, &items[0]);
+    uint *item = map_search(map, &items[0]);
+    print_item(item);
+    void *tmp1 = &items[0];
+    void **tmp2 = &tmp1;
+    map_delete(map, tmp2);
+    item = map_search(map, &items[0]);
+    print_item(item);
 
     return 0;
 }

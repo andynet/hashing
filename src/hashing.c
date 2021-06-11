@@ -52,7 +52,7 @@ void   map_insert(map_t *map, void *item) {
 }
 
 void  *map_search(map_t *map, void *item) {
-    uint idx = map->hash_fn(item);
+    uint idx = map->hash_fn(item) % map->max_size;
     void *current = map->items[idx];
     if (current == NULL) return NULL;
     while (current == DELETED || map->cmp_fn(current, item) != 0) {
@@ -62,11 +62,11 @@ void  *map_search(map_t *map, void *item) {
     return map->items[idx];
 }
 
-void   map_delete(map_t *map, void *item) {
-    void *to_delete = map_search(map, item);
-    if (to_delete != NULL) {
-        to_delete = DELETED;
-    }
+void   map_delete(map_t *map, void **item) {
+    // void *to_delete = map_search(map, *item);
+    //if (to_delete != NULL) {
+    (*item) = DELETED;
+    // }
 }
 
 uint   map_get_size(map_t *map) { return map->size; }

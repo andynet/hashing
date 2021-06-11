@@ -69,6 +69,25 @@ START_TEST(inserted_items_can_be_found) {
     }
 } END_TEST
 
+START_TEST(inserting_more_items_than_max_size_resizes_map) {
+    uint items[] = {7, 54, 84, 42, 13, 56, 45};
+    map_t *map = map_create(4, &hash_fn, &cmp_fn);
+    for (uint i=0; i<7; i++) { map_insert(map, &items[i]); }
+    ck_assert_uint_ge(map_get_max_size(map), 7);
+    ck_assert_uint_eq(map_get_size(map), 7);
+} END_TEST
+
+//START_TEST(deleted_item_can_not_be_found) {
+//    uint items[] = {49};
+//    map_t *map = map_create(11, &hash_fn, &cmp_fn);
+//    map_insert(map, &items[0]);
+//    uint *item = map_search(map, &items[0]);
+//    ck_assert_uint_eq(*item, items[0]);
+//    map_delete(map, &items[0]);
+//    item = map_search(map, &items[0]);
+//    ck_assert_ptr_eq(item, NULL);
+//} END_TEST
+
 int main(void) {
     int failed;
     Suite *suite = suite_create("suite");
@@ -83,6 +102,8 @@ int main(void) {
     tcase_add_test(tcase, can_insert_more_items);
     tcase_add_test(tcase, resizes_map);
     tcase_add_test(tcase, inserted_items_can_be_found);
+    tcase_add_test(tcase, inserting_more_items_than_max_size_resizes_map);
+    // tcase_add_test(tcase, deleted_item_can_not_be_found);
 
     SRunner *runner = srunner_create(suite);
     srunner_run_all(runner, CK_VERBOSE);
