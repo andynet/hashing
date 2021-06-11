@@ -54,12 +54,12 @@ void   map_insert(map_t *map, void *item) {
 void  *map_search(map_t *map, void *item) {
     uint idx = map->hash_fn(item);
     void *current = map->items[idx];
-    while (current != NULL || current == DELETED || map->cmp_fn(current, item) != 0) {
+    if (current == NULL) return NULL;
+    while (current == DELETED || map->cmp_fn(current, item) != 0) {
         idx = (idx + 1) % map->max_size;
         current = map->items[idx];
     }
-    if (current == NULL) return NULL;
-    else return map->items[idx];
+    return map->items[idx];
 }
 
 void   map_delete(map_t *map, void *item) {
@@ -73,27 +73,31 @@ uint   map_get_size(map_t *map) { return map->size; }
 uint   map_get_max_size(map_t *map) { return map->max_size; }
 
 void   map_iterate(map_t *map, uint *from, void **item) {
-    void *current = map->items[*from];
+    void *current = NULL;
     while (current == NULL || current == DELETED) {
-        (*from)++;
         if ((*from) == map->max_size) {
-            item = NULL;
+            (*item) = NULL;
             return;
         }
         current = map->items[*from];
+        (*from)++;
     }
-    (*item) = map->items[*from];
+    (*item) = current;
+    (*from)--;
 }
 
-void   map_resize(map_t *old_map, uint new_size) {
-    map_t *new_map = map_create(new_size, old_map->hash_fn, old_map->cmp_fn);
+void   map_resize(map_t *map, uint new_size) {
+    map_t *new_map = map_create(new_size, map->hash_fn, map->cmp_fn);
+
     uint idx = 0;
     void *item = NULL;
-    map_iterate(old_map, &idx, item);
-    while (idx != -1) {
+    map_iterate(map, &idx, &item);
+    while (item != NULL) {
         map_insert(new_map, item);
         idx++;
-        map_iterate(old_map, &idx, item);
+        map_iterate(map, &idx, &item);
     }
-    map_destroy(old_map);
+
+    map_destroy(map);
+    (*map) = (*new_map);
 }

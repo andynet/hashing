@@ -9,11 +9,12 @@ uint hash(const void *item) {
 
 void print_item(void *item) {
     if (item == NULL) {
-        printf(" NULL ");
+        printf("NULL, ");
     } else {
         int *ptr = (int *)item;
-        printf(" %i ", *ptr);
+        printf("%i, ", *ptr);
     }
+    fflush(stdout); // The stdout is flushed only on newline by default.
 }
 
 void set_print(map_t *map) {
@@ -41,24 +42,34 @@ int cmp(const void *item1,const void *item2) {
 }
 
 int main() {
-    uint i = 0;
     map_t *map = map_create(11, hash, cmp);
+    uint *a;
 
-    uint *a = malloc(sizeof *a);
+    a = malloc(sizeof *a);
     (*a) = 10;
     map_insert(map, a);
     a = malloc(sizeof *a);
     (*a) = 5;
     map_insert(map, a);
+    a = malloc(sizeof *a);
+    (*a) = 13;
+    map_insert(map, a);
+
     set_print(map);
 
-//    map_resize(map, 20);
-//    set_print(map);
-//
-//    a = map_search(map, a);
-//    printf("%i\n", *a);
-//
-//    map_destroy(map);
+    map_resize(map, 20);
+    set_print(map);
+
+    a = malloc(sizeof *a);
+
+    (*a) = 5;
+    a = map_search(map, a);
+    print_item(a);
+    (*a) = 6;
+    a = map_search(map, a);
+    print_item(a);
+
+    map_destroy(map);
 
     return 0;
 }
