@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "hashing.h"
+#include "src/hashing.h"
 
 uint hash(const void *item) {
     uint *n = (uint *)item;
