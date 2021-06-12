@@ -13,7 +13,7 @@ map_t *map_create(uint max_size, hash_fn_t hash, cmp_fn_t cmp);
 void   map_destroy(map_t *map);
 void   map_insert(map_t *map, void *item);  // linear probing
 void  *map_search(map_t *map, void *item);  // returns NULL if not found
-void   map_delete(map_t *map, void **item);  // using tombstones
+void   map_delete(map_t *map, void *item);  // using tombstones
 uint   map_get_size(map_t *map);
 uint   map_get_max_size(map_t *map);
 void   map_iterate(map_t *map, uint *from, void **item);

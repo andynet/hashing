@@ -36,6 +36,8 @@ void set_print(map_t *map) {
 int cmp_fn(const void *item1,const void *item2) {
     const int *i1 = item1;
     const int *i2 = item2;
+    // if (i1 == NULL) { return 0; }
+    // if (i2 == NULL) { return 0; }
     if (*i1 < *i2) return -1;
     else if (*i1 > *i2) return 1;
     else return 0;
@@ -47,11 +49,6 @@ int main() {
     map_t *map = map_create(11, &hash_fn, &cmp_fn);
     map_insert(map, &items[0]);
     uint *item = map_search(map, &items[0]);
-    print_item(item);
-    void *tmp1 = &items[0];
-    void **tmp2 = &tmp1;
-    map_delete(map, tmp2);
-    item = map_search(map, &items[0]);
     print_item(item);
 
     return 0;
