@@ -88,6 +88,20 @@ START_TEST(deleted_item_can_not_be_found) {
     ck_assert_ptr_eq(item, NULL);
 } END_TEST
 
+START_TEST(items_with_the_same_hash_deleted) {
+    uint items[] = {3, 13, 23};
+    map_t *map = map_create(5, &hash_fn, &cmp_fn);
+    for (uint i=0; i<3; i++) map_insert(map, &items[i]);
+    map_delete(map, &items[1]);
+    map_delete(map, &items[2]);
+    uint *item = map_search(map, &items[0]);
+    ck_assert_uint_eq(*item, items[0]);
+    item = map_search(map, &items[1]);
+    ck_assert_ptr_eq(item, NULL);
+    item = map_search(map, &items[2]);
+    ck_assert_ptr_eq(item, NULL);
+} END_TEST
+
 int main(void) {
     int failed;
     Suite *suite = suite_create("suite");
@@ -104,6 +118,7 @@ int main(void) {
     tcase_add_test(tcase, inserted_items_can_be_found);
     tcase_add_test(tcase, inserting_more_items_than_max_size_resizes_map);
     tcase_add_test(tcase, deleted_item_can_not_be_found);
+    tcase_add_test(tcase, items_with_the_same_hash_deleted);
 
     SRunner *runner = srunner_create(suite);
     srunner_run_all(runner, CK_VERBOSE);
