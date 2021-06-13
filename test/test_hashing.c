@@ -10,7 +10,7 @@ START_TEST(empty_test) {} END_TEST
 
 START_TEST(creates_empty_map) {
     uint size = 5;
-    map_t *map = map_create(size, &hash_fn, &cmp_fn);    // https://stackoverflow.com/a/16917159
+    map_t map = map_create(size, &hash_fn, &cmp_fn);    // https://stackoverflow.com/a/16917159
     ck_assert_int_eq(map_get_size(map), 0);
     map_destroy(&map);
     ck_assert_ptr_eq(map, NULL);
@@ -19,7 +19,7 @@ START_TEST(creates_empty_map) {
 START_TEST(creates_map_of_the_correct_size) {
     uint sizes[] = {5, 8, 11};
     for (uint i=0; i<3; i++) {
-        map_t *map = map_create(sizes[i], &hash_fn, &cmp_fn);
+        map_t map = map_create(sizes[i], &hash_fn, &cmp_fn);
         ck_assert_int_eq(map_get_max_size(map), sizes[i]);
         map_destroy(&map);
         ck_assert_ptr_eq(map, NULL);
@@ -27,7 +27,7 @@ START_TEST(creates_map_of_the_correct_size) {
 } END_TEST
 
 START_TEST(can_insert_one_item) {
-    map_t *map = map_create(5, &hash_fn, &cmp_fn);
+    map_t map = map_create(5, &hash_fn, &cmp_fn);
     uint *item = malloc(sizeof *item);
     (*item) = 3;
     map_insert(&map, item);
@@ -36,20 +36,20 @@ START_TEST(can_insert_one_item) {
 
 START_TEST(can_insert_more_items) {
     uint items[] = {3, 5, 7, 11};
-    map_t *map = map_create(5, &hash_fn, &cmp_fn);
+    map_t map = map_create(5, &hash_fn, &cmp_fn);
     for (uint i=0; i<4; i++) { map_insert(&map, &items[i]); }
     ck_assert_int_eq(map_get_size(map), 4);
 } END_TEST
 
 START_TEST(resizes_map) {
-    map_t *map = map_create(5, &hash_fn, &cmp_fn);
+    map_t map = map_create(5, &hash_fn, &cmp_fn);
     map_resize(&map, 23);
     ck_assert_int_eq(map_get_max_size(map), 23);
 } END_TEST
 
 START_TEST(inserted_items_can_be_found) {
     uint items[] = {7, 11, 18, 57, 68};
-    map_t *map = map_create(5, &hash_fn, &cmp_fn);
+    map_t map = map_create(5, &hash_fn, &cmp_fn);
     for (uint i=0; i<5; i++) { map_insert(&map, &items[i]); }
     for (uint i=0; i<5; i++) {
         uint *item = map_search(map, &items[i]);
@@ -59,7 +59,7 @@ START_TEST(inserted_items_can_be_found) {
 
 START_TEST(inserting_more_items_than_max_size_resizes_map) {
     uint items[] = {7, 54, 84, 42, 13, 56, 45};
-    map_t *map = map_create(4, &hash_fn, &cmp_fn);
+    map_t map = map_create(4, &hash_fn, &cmp_fn);
     for (uint i=0; i<7; i++) { map_insert(&map, &items[i]); }
     ck_assert_uint_ge(map_get_max_size(map), 7);
     ck_assert_uint_eq(map_get_size(map), 7);
@@ -67,7 +67,7 @@ START_TEST(inserting_more_items_than_max_size_resizes_map) {
 
 START_TEST(deleted_item_can_not_be_found) {
     uint items[] = {49};
-    map_t *map = map_create(11, &hash_fn, &cmp_fn);
+    map_t map = map_create(11, &hash_fn, &cmp_fn);
     map_insert(&map, &items[0]);
     uint *item = map_search(map, &items[0]);
     ck_assert_uint_eq(*item, items[0]);
@@ -78,7 +78,7 @@ START_TEST(deleted_item_can_not_be_found) {
 
 START_TEST(items_with_the_same_hash_deleted) {
     uint items[] = {3, 13, 23};
-    map_t *map = map_create(5, &hash_fn, &cmp_fn);
+    map_t map = map_create(5, &hash_fn, &cmp_fn);
     for (uint i=0; i<3; i++) map_insert(&map, &items[i]);
     map_delete(map, &items[1]);
     map_delete(map, &items[2]);
@@ -92,7 +92,7 @@ START_TEST(items_with_the_same_hash_deleted) {
 
 START_TEST(inserting_and_deleting_should_not_change_the_size) {
     uint items[] = {4, 9, 65, 12};
-    map_t *map = map_create(20, &hash_fn, &cmp_fn);
+    map_t map = map_create(20, &hash_fn, &cmp_fn);
     map_insert(&map, &items[1]);
     map_delete(map, &items[1]);
     ck_assert_uint_eq(map_get_size(map), 0);
@@ -100,7 +100,7 @@ START_TEST(inserting_and_deleting_should_not_change_the_size) {
 
 START_TEST(deleting_the_item_with_the_same_hash_should_be_unsuccessfull) {
     uint items[] = {5, 15};
-    map_t *map = map_create(10, &hash_fn, &cmp_fn);
+    map_t map = map_create(10, &hash_fn, &cmp_fn);
     map_insert(&map, &items[1]);
     map_delete(map, &items[0]);
     ck_assert_uint_eq(map_get_size(map), 1);
@@ -108,7 +108,7 @@ START_TEST(deleting_the_item_with_the_same_hash_should_be_unsuccessfull) {
 
 START_TEST(resizing_to_smaller_size_than_number_of_items) {
     uint items[] = {5, 48, 65, 21, 25, 54, 56, 59, 42, 15};
-    map_t *map = map_create(10, &hash_fn, &cmp_fn);
+    map_t map = map_create(10, &hash_fn, &cmp_fn);
     for (uint i=0; i<10; i++) map_insert(&map, &items[i]);
     ck_assert_uint_eq(map_get_size(map), 10);
     map_resize(&map, 1);

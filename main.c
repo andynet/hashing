@@ -17,7 +17,7 @@ void print_item(void *item) {
     fflush(stdout); // The stdout is flushed only on newline by default.
 }
 
-void set_print(map_t *map) {
+void set_print(map *map) {
     uint size = map_get_size(map);
     uint max_size = map_get_max_size(map);
     printf("%i/%i: {", size, max_size);
@@ -43,12 +43,6 @@ int cmp_fn(const void *item1,const void *item2) {
 }
 
 int main() {
-
-    uint items[] = {7, 54, 84, 42, 13, 56, 45};
-    map_t *map = map_create(4, &hash_fn, &cmp_fn);
-    for (uint i=0; i<7; i++) {
-        map_insert(map, &items[i]);
-    }
 
     return 0;
 }
