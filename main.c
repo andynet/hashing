@@ -19,7 +19,8 @@ void print_item(void *item) {
 
 void set_print(map_t *map) {
     uint size = map_get_size(map);
-    printf("%i: {", size);
+    uint max_size = map_get_max_size(map);
+    printf("%i/%i: {", size, max_size);
 
     uint i=0;
     void *a=NULL;
@@ -36,8 +37,6 @@ void set_print(map_t *map) {
 int cmp_fn(const void *item1,const void *item2) {
     const int *i1 = item1;
     const int *i2 = item2;
-    // if (i1 == NULL) { return 0; }
-    // if (i2 == NULL) { return 0; }
     if (*i1 < *i2) return -1;
     else if (*i1 > *i2) return 1;
     else return 0;
@@ -45,11 +44,12 @@ int cmp_fn(const void *item1,const void *item2) {
 
 int main() {
 
-    uint items[] = {49};
-    map_t *map = map_create(11, &hash_fn, &cmp_fn);
-    map_insert(map, &items[0]);
-    uint *item = map_search(map, &items[0]);
-    print_item(item);
+    uint items[] = {5, 48, 65, 21, 25, 54, 56, 59, 42, 15};
+    map_t *map = map_create(10, &hash_fn, &cmp_fn);
+    for (uint i=0; i<10; i++) map_insert(map, &items[i]);
+    set_print(map);
+    map_resize(map, 1);
+    set_print(map);
 
     return 0;
 }

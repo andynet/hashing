@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../src/hashing.h"
-#include "../src/hashing.c"
 
 uint hash_fn(const void *);
 int   cmp_fn(const void *, const void *);
@@ -26,17 +25,6 @@ START_TEST(creates_map_of_the_correct_size) {
         map = NULL;
     }
 } END_TEST
-
-//START_TEST(destroyed_map_is_deallocated) {
-//    // allocate 32GB in chunks of 1GB
-//    // if you run out of memory, the deallocation does not work
-//    uint size = 1024 * 1024 * 1024 / sizeof (void *);
-//    for (uint i=0; i<32; i++) {
-//        map_t *map = map_create(size, &hash_fn, &cmp_fn);
-//        map_destroy(map);
-//    }
-//    // find some other way of testing?
-//} END_TEST
 
 START_TEST(can_insert_one_item) {
     map_t *map = map_create(5, &hash_fn, &cmp_fn);
@@ -102,6 +90,32 @@ START_TEST(items_with_the_same_hash_deleted) {
     ck_assert_ptr_eq(item, NULL);
 } END_TEST
 
+START_TEST(inserting_and_deleting_should_not_change_the_size) {
+    uint items[] = {4, 9, 65, 12};
+    map_t *map = map_create(20, &hash_fn, &cmp_fn);
+    map_insert(map, &items[1]);
+    map_delete(map, &items[1]);
+    ck_assert_uint_eq(map_get_size(map), 0);
+} END_TEST
+
+START_TEST(deleting_the_item_with_the_same_hash_should_be_unsuccessfull) {
+    uint items[] = {5, 15};
+    map_t *map = map_create(10, &hash_fn, &cmp_fn);
+    map_insert(map, &items[1]);
+    map_delete(map, &items[0]);
+    ck_assert_uint_eq(map_get_size(map), 1);
+} END_TEST
+
+START_TEST(resizing_to_smaller_size_than_number_of_items) {
+    uint items[] = {5, 48, 65, 21, 25, 54, 56, 59, 42, 15};
+    map_t *map = map_create(10, &hash_fn, &cmp_fn);
+    for (uint i=0; i<10; i++) map_insert(map, &items[i]);
+    ck_assert_uint_eq(map_get_size(map), 10);
+    map_resize(map, 1);
+    ck_assert_uint_eq(map_get_max_size(map), 16);
+    ck_assert_uint_eq(map_get_size(map), 10);
+} END_TEST
+
 int main(void) {
     int failed;
     Suite *suite = suite_create("suite");
@@ -111,7 +125,6 @@ int main(void) {
     tcase_add_test(tcase, empty_test);
     tcase_add_test(tcase, creates_empty_map);
     tcase_add_test(tcase, creates_map_of_the_correct_size);
-    // tcase_add_test(tcase, destroyed_map_is_deallocated);
     tcase_add_test(tcase, can_insert_one_item);
     tcase_add_test(tcase, can_insert_more_items);
     tcase_add_test(tcase, resizes_map);
@@ -119,9 +132,13 @@ int main(void) {
     tcase_add_test(tcase, inserting_more_items_than_max_size_resizes_map);
     tcase_add_test(tcase, deleted_item_can_not_be_found);
     tcase_add_test(tcase, items_with_the_same_hash_deleted);
+    tcase_add_test(tcase, inserting_and_deleting_should_not_change_the_size);
+    tcase_add_test(tcase, deleting_the_item_with_the_same_hash_should_be_unsuccessfull);
+    tcase_add_test(tcase, resizing_to_smaller_size_than_number_of_items);
 
     SRunner *runner = srunner_create(suite);
-    srunner_run_all(runner, CK_VERBOSE);
+    srunner_run_all(runner, CK_NORMAL);
+    // srunner_run_all(runner, CK_VERBOSE);
     failed = srunner_ntests_failed(runner);
     srunner_free(runner);
 

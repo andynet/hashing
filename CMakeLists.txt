@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.17)
 project(hashing C)
 set(CMAKE_C_STANDARD 99)
 
+file(REMOVE cmake-build-debug-coverage/CMakeFiles/hashing.dir/src/hashing.c.gcda)
+file(REMOVE cmake-build-debug-coverage/CMakeFiles/test.dir/test/test_hashing.c.gcda)
+# cmake-build-debug-coverage/CMakeFiles/hashing.dir/src/hashing.c.gcda
+
 add_library(hashing src/hashing.h src/hashing.c)
 
 add_executable(main main.c)
