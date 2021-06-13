@@ -44,12 +44,11 @@ int cmp_fn(const void *item1,const void *item2) {
 
 int main() {
 
-    uint items[] = {5, 48, 65, 21, 25, 54, 56, 59, 42, 15};
-    map_t *map = map_create(10, &hash_fn, &cmp_fn);
-    for (uint i=0; i<10; i++) map_insert(map, &items[i]);
-    set_print(map);
-    map_resize(map, 1);
-    set_print(map);
+    uint items[] = {7, 54, 84, 42, 13, 56, 45};
+    map_t *map = map_create(4, &hash_fn, &cmp_fn);
+    for (uint i=0; i<7; i++) {
+        map_insert(map, &items[i]);
+    }
 
     return 0;
 }

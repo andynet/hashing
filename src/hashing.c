@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "hashing.h"
 
@@ -9,6 +10,19 @@
 char g_tombstone = '\0';
 #define DELETED ((void *)&g_tombstone)
 
+void *safe_malloc(uint size) {
+    void *ptr = malloc(size);
+    if (ptr == NULL) {
+        fprintf(stderr, "Error: malloc() unsuccessful.");
+        exit(EXIT_FAILURE);
+    }
+    return ptr;
+}
+
+void safe_free(void **ptr) {
+    free(*ptr);
+    *ptr = NULL;
+}
 
 struct map {
     uint max_size;
@@ -19,12 +33,12 @@ struct map {
 };
 
 map_t *map_create(uint max_size, hash_fn_t hash_fn, cmp_fn_t cmp_fn) {
-    map_t *map = malloc(sizeof *map);
+    map_t *map = safe_malloc(sizeof *map);
     map->max_size = max_size;
     map->size = 0;
     map->hash_fn = hash_fn;
     map->cmp_fn = cmp_fn;
-    map->items = malloc(sizeof *(map->items) * map->max_size);
+    map->items = safe_malloc(sizeof *(map->items) * map->max_size);
     for (uint i=0; i<map->max_size; i++) { map->items[i] = NULL; }
     return map;
 }
@@ -32,23 +46,23 @@ map_t *map_create(uint max_size, hash_fn_t hash_fn, cmp_fn_t cmp_fn) {
 /* This does not deallocate the items themselves, only the map.
  * To deallocate the items, the map can be iterated with map_iterate
  * and items deallocated one by one. */
-void   map_destroy(map_t *map) {
-    free(map->items);
-    free(map);
+void   map_destroy(map_t **map) {
+    safe_free((void **) &(*map)->items);
+    safe_free((void **) map);
 }
 
 /* Uses linear probing. */
-void   map_insert(map_t *map, void *item) {
-    if (map->size == map->max_size) {
-        map_resize(map, map->max_size * 2);
+void   map_insert(map_t **map, void *item) {
+    if ((*map)->size == (*map)->max_size) {
+        map_resize(map, (*map)->max_size * 2);
     }
 
-    uint idx = map->hash_fn(item) % map->max_size;
-    while (map->items[idx] != NULL && map->items[idx] != DELETED) {
-        idx = (idx + 1) % map->max_size;
+    uint idx = (*map)->hash_fn(item) % (*map)->max_size;
+    while ((*map)->items[idx] != NULL && (*map)->items[idx] != DELETED) {
+        idx = (idx + 1) % (*map)->max_size;
     }
-    map->items[idx] = item;
-    map->size++;
+    (*map)->items[idx] = item;
+    (*map)->size++;
 }
 
 void  *map_search(map_t *map, void *item) {
@@ -92,19 +106,20 @@ void   map_iterate(map_t *map, uint *from, void **item) {
     (*from)--;
 }
 
-void   map_resize(map_t *map, uint new_size) {
-    while (new_size < map->size) { new_size *= 2; }
-    map_t *new_map = map_create(new_size, map->hash_fn, map->cmp_fn);
+void   map_resize(map_t **map, uint new_size) {
+    map_t *old_map = *map;
+    while (new_size < old_map->size) { new_size *= 2; }
+    map_t *new_map = map_create(new_size, old_map->hash_fn, old_map->cmp_fn);
 
     uint idx = 0;
     void *item = NULL;
-    map_iterate(map, &idx, &item);
+    map_iterate(old_map, &idx, &item);
     while (item != NULL) {
-        map_insert(new_map, item);
+        map_insert(&new_map, item);
         idx++;
-        map_iterate(map, &idx, &item);
+        map_iterate(old_map, &idx, &item);
     }
 
     map_destroy(map);
-    (*map) = (*new_map);
+    *map = new_map;
 }
