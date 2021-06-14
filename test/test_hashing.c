@@ -32,6 +32,7 @@ START_TEST(can_insert_one_item) {
     (*item) = 3;
     map_insert(&map, item);
     ck_assert_int_eq(map_get_size(map), 1);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(can_insert_more_items) {
@@ -39,12 +40,14 @@ START_TEST(can_insert_more_items) {
     map_t map = map_create(5, &hash_fn, &cmp_fn);
     for (uint i=0; i<4; i++) { map_insert(&map, &items[i]); }
     ck_assert_int_eq(map_get_size(map), 4);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(resizes_map) {
     map_t map = map_create(5, &hash_fn, &cmp_fn);
     map_resize(&map, 23);
     ck_assert_int_eq(map_get_max_size(map), 23);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(inserted_items_can_be_found) {
@@ -55,6 +58,7 @@ START_TEST(inserted_items_can_be_found) {
         uint *item = map_search(map, &items[i]);
         ck_assert_int_eq(*item, items[i]);
     }
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(inserting_more_items_than_max_size_resizes_map) {
@@ -63,6 +67,7 @@ START_TEST(inserting_more_items_than_max_size_resizes_map) {
     for (uint i=0; i<7; i++) { map_insert(&map, &items[i]); }
     ck_assert_uint_ge(map_get_max_size(map), 7);
     ck_assert_uint_eq(map_get_size(map), 7);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(deleted_item_can_not_be_found) {
@@ -74,6 +79,7 @@ START_TEST(deleted_item_can_not_be_found) {
     map_delete(map, &items[0]);
     item = map_search(map, &items[0]);
     ck_assert_ptr_eq(item, NULL);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(items_with_the_same_hash_deleted) {
@@ -88,6 +94,7 @@ START_TEST(items_with_the_same_hash_deleted) {
     ck_assert_ptr_eq(item, NULL);
     item = map_search(map, &items[2]);
     ck_assert_ptr_eq(item, NULL);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(inserting_and_deleting_should_not_change_the_size) {
@@ -96,6 +103,7 @@ START_TEST(inserting_and_deleting_should_not_change_the_size) {
     map_insert(&map, &items[1]);
     map_delete(map, &items[1]);
     ck_assert_uint_eq(map_get_size(map), 0);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(deleting_the_item_with_the_same_hash_should_be_unsuccessfull) {
@@ -104,6 +112,7 @@ START_TEST(deleting_the_item_with_the_same_hash_should_be_unsuccessfull) {
     map_insert(&map, &items[1]);
     map_delete(map, &items[0]);
     ck_assert_uint_eq(map_get_size(map), 1);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(resizing_to_smaller_size_than_number_of_items) {
@@ -114,6 +123,7 @@ START_TEST(resizing_to_smaller_size_than_number_of_items) {
     map_resize(&map, 1);
     ck_assert_uint_eq(map_get_max_size(map), 16);
     ck_assert_uint_eq(map_get_size(map), 10);
+    map_destroy(&map);
 } END_TEST
 
 int main(void) {
