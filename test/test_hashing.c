@@ -134,6 +134,7 @@ START_TEST(finding_nonexistent_item_from_full_map_should_return_NULL) {
     *absent = 10;
     uint *item = map_search(map, absent);
     ck_assert_ptr_eq(item, NULL);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(deleting_nonexistent_item_from_full_map_should_end) {
@@ -143,6 +144,7 @@ START_TEST(deleting_nonexistent_item_from_full_map_should_end) {
     uint *absent = malloc(sizeof *absent);
     *absent = 10;
     map_delete(map, absent);
+    map_destroy(&map);
 } END_TEST
 
 START_TEST(iterating_full_map_should_end) {
@@ -157,6 +159,7 @@ START_TEST(iterating_full_map_should_end) {
         idx++;
         map_iterate(map, &idx, &item);
     }
+    map_destroy(&map);
 } END_TEST
 
 int main(void) {
