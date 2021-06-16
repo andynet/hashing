@@ -11,7 +11,7 @@ add_library(hashing src/hashing.h src/hashing.c)
 add_library(safe_alloc src/safe_alloc.h src/safe_alloc.c)
 
 add_executable(main main.c)
-target_link_libraries(main hashing)
+target_link_libraries(main hashing safe_alloc)
 
 add_executable(test test/test_hashing.c)
 target_link_libraries(test hashing safe_alloc)                     # tested library

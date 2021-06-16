@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "safe_alloc.h"
 #include "hashing.h"
 
 /* This is an address which is guaranteed to be NOT used for the objects item.
@@ -59,12 +58,16 @@ void   map_insert(map_t *map, void *item) {
 void  *map_search(map_t map, void *item) {
     uint idx = map->hash_fn(item) % map->max_size;
     void *current = map->items[idx];
-    while (current == DELETED || map->cmp_fn(current, item) != 0) {
+    uint i = 0;
+    while ((current == DELETED || map->cmp_fn(current, item) != 0) && (i<map->max_size)) {
         idx = (idx + 1) % map->max_size;
         current = map->items[idx];
         if (current == NULL) return NULL;
+        i++;
     }
-    return map->items[idx];
+
+    if (map->cmp_fn(current, item) == 0) return map->items[idx];
+    else return NULL;
 }
 
 /* using tombstones */
@@ -72,13 +75,20 @@ void   map_delete(map_t map, void *item) {
     uint idx = map->hash_fn(item) % map->max_size;
     void *current = map->items[idx];
     if (current == NULL) { return; }
-    while (current == DELETED || map->cmp_fn(current, item) != 0) {
+    uint i = 0;
+    while ((current == DELETED || map->cmp_fn(current, item) != 0) && (i<map->max_size)) {
         idx = (idx + 1) % map->max_size;
         current = map->items[idx];
         if (current == NULL) { return; }
+        i++;
     }
-    map->items[idx] = DELETED;
-    map->size--;
+
+    if (map->cmp_fn(current, item) == 0) {
+        map->items[idx] = DELETED;
+        map->size--;
+    } else {
+        return;
+    }
 }
 
 uint   map_get_size(map_t map) { return map->size; }

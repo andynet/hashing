@@ -126,6 +126,39 @@ START_TEST(resizing_to_smaller_size_than_number_of_items) {
     map_destroy(&map);
 } END_TEST
 
+START_TEST(finding_nonexistent_item_from_full_map_should_return_NULL) {
+    uint items[] = {24, 48, 12, 65};
+    map_t map = map_create(4, &hash_fn, &cmp_fn);
+    for (uint i=0; i<4; i++) { map_insert(&map, &items[i]); }
+    uint *absent = malloc(sizeof *absent);
+    *absent = 10;
+    uint *item = map_search(map, absent);
+    ck_assert_ptr_eq(item, NULL);
+} END_TEST
+
+START_TEST(deleting_nonexistent_item_from_full_map_should_end) {
+    uint items[] = {24, 48, 12, 65};
+    map_t map = map_create(4, &hash_fn, &cmp_fn);
+    for (uint i=0; i<4; i++) { map_insert(&map, &items[i]); }
+    uint *absent = malloc(sizeof *absent);
+    *absent = 10;
+    map_delete(map, absent);
+} END_TEST
+
+START_TEST(iterating_full_map_should_end) {
+    uint items[] = {24, 48, 12, 65};
+    map_t map = map_create(4, &hash_fn, &cmp_fn);
+    for (uint i=0; i<4; i++) { map_insert(&map, &items[i]); }
+
+    uint idx = 0;
+    void *item = NULL;
+    map_iterate(map, &idx, &item);
+    while (item != NULL) {
+        idx++;
+        map_iterate(map, &idx, &item);
+    }
+} END_TEST
+
 int main(void) {
     int failed;
     Suite *suite = suite_create("suite");
@@ -145,6 +178,9 @@ int main(void) {
     tcase_add_test(tcase, inserting_and_deleting_should_not_change_the_size);
     tcase_add_test(tcase, deleting_the_item_with_the_same_hash_should_be_unsuccessfull);
     tcase_add_test(tcase, resizing_to_smaller_size_than_number_of_items);
+    tcase_add_test(tcase, finding_nonexistent_item_from_full_map_should_return_NULL);
+    tcase_add_test(tcase, deleting_nonexistent_item_from_full_map_should_end);
+    tcase_add_test(tcase, iterating_full_map_should_end);
 
     SRunner *runner = srunner_create(suite);
     srunner_run_all(runner, CK_NORMAL);

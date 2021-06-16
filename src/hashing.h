@@ -1,6 +1,8 @@
 #ifndef HASHING_H
 #define HASHING_H
 
+#include "safe_alloc.h"
+
 /* Type map_t is pointer to the struct map.
  * This way, struct map can not be instantiated outside of the module
  * and inner structure cannot be accessed by other means than the interface in this file.
