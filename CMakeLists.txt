@@ -12,8 +12,10 @@ add_executable(main main.c)
 target_link_libraries(main hashing safe_alloc)
 
 add_executable(test test/test_hashing.c)
-target_link_libraries(test hashing safe_alloc)                     # tested library
-target_link_libraries(test check m rt pthread subunit)  # libraries needed for testing
+# tested library
+target_link_libraries(test hashing safe_alloc)
+# libraries needed for testing
+target_link_libraries(test check m rt pthread subunit)
 
 add_executable(crit test/crit.c)
 target_link_libraries(crit hashing safe_alloc)
