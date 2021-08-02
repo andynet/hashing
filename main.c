@@ -44,13 +44,11 @@ int cmp_fn(const void *item1,const void *item2) {
 
 int main() {
 
-    uint items[] = {24, 48, 12, 65};
     map_t map = map_create(4, &hash_fn, &cmp_fn);
-    for (uint i=0; i<4; i++) { map_insert(&map, &items[i]); }
     uint *absent = malloc(sizeof *absent);
     *absent = 10;
     uint *item = map_search(map, absent);
-    print_item(item);
+    map_destroy(&map);
 
     return 0;
 }

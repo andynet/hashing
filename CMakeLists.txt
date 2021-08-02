@@ -5,6 +5,7 @@ set(CMAKE_C_STANDARD 99)
 file(REMOVE cmake-build-debug-coverage/CMakeFiles/hashing.dir/src/hashing.c.gcda)
 file(REMOVE cmake-build-debug-coverage/CMakeFiles/test.dir/test/test_hashing.c.gcda)
 
+link_directories(/usr/local/lib)
 add_library(hashing src/hashing.h src/hashing.c)
 add_library(safe_alloc src/safe_alloc.h src/safe_alloc.c)
 

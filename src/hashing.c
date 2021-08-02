@@ -58,6 +58,7 @@ void   map_insert(map_t *map, void *item) {
 void  *map_search(map_t map, void *item) {
     uint idx = map->hash_fn(item) % map->max_size;
     void *current = map->items[idx];
+    if (current == NULL) return NULL;
     uint i = 0;
     while ((current == DELETED || map->cmp_fn(current, item) != 0) && (i<map->max_size)) {
         idx = (idx + 1) % map->max_size;

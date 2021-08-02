@@ -135,6 +135,15 @@ Test(core, finding_nonexistent_item_from_full_map_should_return_NULL) {
     map_destroy(&map);
 }
 
+Test(core, searching_empty_map_should_return_NULL) {
+    map_t map = map_create(4, &hash_fn, &cmp_fn);
+    uint *absent = malloc(sizeof *absent);
+    *absent = 10;
+    uint *item = map_search(map, absent);
+    cr_assert(item == NULL);
+    map_destroy(&map);
+}
+
 Test(core, deleting_nonexistent_item_from_full_map_should_end) {
     uint items[] = {24, 48, 12, 65};
     map_t map = map_create(4, &hash_fn, &cmp_fn);
